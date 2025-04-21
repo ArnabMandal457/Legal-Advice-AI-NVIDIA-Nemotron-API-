@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link
+      rel="icon"
+      href="https://m.media-amazon.com/images/I/81Le+t37EEL.jpg"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
+    <title>AI Legal Advisor</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background: linear-gradient(135deg, #f9f5f0 0%, #f3ead7 100%);
+      }
+
+      #chat-container {
+        width: 680px;
+        height: 650px;
+        background: linear-gradient(to bottom, #fcb69fab 0%, #ffecd2aa 100%);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+      }
+
+      #chat-container::before {
+        content: "AI Legal Advisor";
+        position: absolute;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        top: 0;
+        left: 0;
+        right: 0;
+        padding: 15px 20px;
+        background: linear-gradient(
+          to right,
+          #2e1f47 0%,
+          #c9a14a 50%,
+          #2e1f47 100%
+        );
+        color: white;
+        font-weight:700;
+        font-size: 20px;
+        letter-spacing: 0.5px;
+        border-radius: 20px 20px 0 0;
+      }
+
+      #messages {
+        height: calc(100% - 90px);
+        overflow-y: auto;
+        padding: 15px 5px 10px;
+        margin-top: 40px;
+        margin-bottom: 15px;
+        scrollbar-width: thin;
+        scrollbar-color: #ddd transparent;
+      }
+
+      #messages::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      #messages::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      #messages::-webkit-scrollbar-thumb {
+        background-color: #ddd;
+        border-radius: 20px;
+      }
+
+      .msg {
+        margin: 8px 0;
+        padding: 10px 15px;
+        border-radius: 18px;
+        font-size: 14px;
+        line-height: 1.4;
+        max-width: 80%;
+        word-wrap: break-word;
+        position: relative;
+        clear: both;
+      }
+
+      .user {
+        float: right;
+        background: linear-gradient(120deg, #2e1f47 0%, #c9a14a 100%);
+        color: white;
+        border-bottom-right-radius: 4px;
+        box-shadow: 0 2px 5px rgba(106, 17, 203, 0.2);
+      }
+
+      .bot {
+        float: left;
+        background: linear-gradient(240deg, #2e1f47 0%, #c9a14a 100%);
+        color: white;
+        border-bottom-left-radius: 4px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      }
+
+      .user::before,
+      .bot::before {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        width: 10px;
+        height: 10px;
+      }
+
+      .input-container {
+        position: relative;
+        margin-top: auto;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .btn {
+        margin-left: 0.5vw;
+        font-size: 1.05vw;
+        font-weight: 600;
+        border: none;
+        border-radius: 1.5vw;
+        width: 10vw;
+        background: linear-gradient(120deg, #2e1f47 0%, #c9a14a 100%);
+        color: white;
+        cursor: pointer;
+      }
+
+      .btn:hover {
+        transition: all ease 0.5s;
+        box-shadow: 0 2px 10px rgba(106, 17, 203, 0.5);
+      }
+
+      /* .btn:focus {
+        outline: none;
+        transition: all ease 0.5s;
+        box-shadow: 0 2px 10px rgba(106, 17, 203, 0.2);
+        background: white;
+      } */
+
+      #user-input {
+        width: 100%;
+        padding: 15px;
+        padding-right: 40px;
+        font-size: 14px;
+        border: none;
+        border-radius: 20px;
+        background: #f0f2f5;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+      }
+
+      #user-input:focus {
+        outline: none;
+        box-shadow: 0 2px 10px rgba(106, 17, 203, 0.2);
+        background: white;
+      }
+
+      #user-input::placeholder {
+        color: #aaa;
+      }
+
+      /* Clearfix for floating messages */
+      #messages::after {
+        content: "";
+        display: table;
+        clear: both;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="chat-container">
+      <div id="messages"></div>
+      <div class="input-container">
+        <input id="user-input" placeholder="Type your message..." />
+        <button onclick="" id="btn" class="btn">
+          Send <i class="ri-send-plane-fill"></i>
+        </button>
+        <button onclick="location.reload()" class="btn">
+          Refresh <i class="ri-refresh-line"></i>
+        </button>
+      </div>
+    </div>
+
+    <script>
+      // Declare the API key variable (leave it empty for now; should be stored securely on the backend)
+      // This is my API key, please don't use it for your personal Projects 🥺🙏.
+      const API_KEY = "AIzaSyAeNbJHrnCz-TkVBFWPWXpBWMJhs3vr0ek";
+
+      // Get reference to the HTML element where messages will be displayed
+      const messagesDiv = document.getElementById("messages");
+
+      // Get reference to the input box where the user types their message
+      const input = document.getElementById("user-input");
+
+      // Get reference to the send button by which the user sends their message
+      const sendBtn = document.getElementById("btn");
+
+      // Set up the initial instruction/history for the Gemini model
+      const history = [
+        {
+          role: "user", // This is the role of the message sender
+          parts: [
+            {
+              // This is the first message that instructs the model how to respond to future inputs
+              text: `You are an expert Indian legal advisor with complete and up-to-date knowledge of all Indian laws, including but not limited to the Constitution of India, Indian Penal Code (IPC), Code of Criminal Procedure (CrPC), Code of Civil Procedure (CPC), Indian Contract Act, Information Technology Act, and all other central and state laws, government regulations, amendments, case laws, and judicial precedents.
+
+              Provide an accurate, comprehensive, and legally sound response to the following query:
+
+              [what ever the user enters]
+
+              Include citations to relevant sections, acts, rules, or judgments wherever applicable. Clarify any legal jargon in simple terms and list any applicable government bodies or procedures involved. Mention the latest amendments or rulings if relevant.
+              If it's a general factual question or a general statement, just answer it normally.
+              Use bullet points for cleaner response.`,
+            },
+          ],
+        },
+      ];
+
+      // Function to send user input to the Gemini API
+      async function sendMessage(text) {
+        addMessage("user", text); // Display the user's message in the chat
+        input.value = ""; // Clear the input field
+
+        // Add the new user message to the history array
+        history.push({ role: "user", parts: [{ text }] });
+
+        // Send the message to the Gemini API using fetch
+        const response = await fetch(
+          "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" +
+            API_KEY,
+          {
+            method: "POST", // Use HTTP POST method
+            headers: { "Content-Type": "application/json" }, // Set content type to JSON
+            body: JSON.stringify({ contents: history }), // Send the message history as the body
+          }
+        );
+
+        // Parse the response as JSON
+        const data = await response.json();
+
+        // Extract the model's reply text from the response
+        const reply = (
+          data.candidates?.[0]?.content?.parts?.[0]?.text || "No response"
+        ).replace(/\*\*/g, " ");
+
+        addMessage("bot", reply); // Display the model's response in the chat
+
+        // Add the bot's reply to the history for context in future messages
+        history.push({ role: "model", parts: [{ text: reply }] });
+      }
+
+      // Function to display a message in the chat area
+      function addMessage(sender, text) {
+        const div = document.createElement("div");
+        div.className = "msg " + sender;
+
+        // Format the bot message with paragraphs and line breaks
+        if (sender === "bot") {
+          // Replace double newlines with paragraph tags and single newlines with <br>
+          const formatted = text
+            .split("\n\n") // Split paragraphs
+            .map(
+              (para) =>
+                `<p style="margin-bottom: 10px; line-height: 1.5;">${para.replace(
+                  /\n/g,
+                  "<br>"
+                )}</p>`
+            )
+            .join("");
+          div.innerHTML = formatted;
+        } else {
+          div.textContent = text; // Keep user input plain
+        }
+
+        messagesDiv.appendChild(div);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+      }
+
+      // Add event listener to handle Enter key press in the input box
+      input.addEventListener("keypress", (e) => {
+        if (e.key === "Enter" && input.value.trim()) {
+          sendMessage(input.value.trim()); // Send the input if not empty
+        }
+      });
+
+      // Send message on clicking the Send button
+      sendBtn.addEventListener("click", () => {
+        if (input.value.trim()) {
+          sendMessage(input.value.trim());
+        }
+      });
+    </script>
+  </body>
+</html>
